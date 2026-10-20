@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop Shoes & Sneakers | SoleStride Footwear Collection{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted">Home</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Store Catalog</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold display-font mb-0">Footwear Catalog</h1>
+        <p class="text-muted small mb-0">Engineered athletic silhouettes, rare collector retros, and handcrafted dress shoes.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-white fw-bold mb-0"><i class="bi bi-funnel-fill text-warning me-1"></i> Filter By</h5>
+                    <a href="{% url 'store' %}" class="text-warning small text-decoration-none">Reset All</a>
+                </div>
+
+                <form method="GET" action="{% url 'store' %}" id="filterForm">
+                    <!-- Search input -->
+                    <div class="mb-4">
+                        <label class="filter-heading">Search Name / Brand</label>
+                        <div class="input-group">
+                            <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="e.g. Turbo, Brogue...">
+                            <button type="submit" class="btn btn-sole-primary btn-sm"><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <label class="filter-heading">Category</label>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="category" value="" id="catAll" {% if not current_category %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label text-white small" for="catAll">All Categories</label>
+                            </div>
+                            {% for cat in categories %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="category" value="{{ cat.slug }}" id="cat_{{ cat.slug }}" {% if current_category == cat.slug %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label text-white small d-flex justify-content-between" for="cat_{{ cat.slug }}">
+                                        <span>{{ cat.name }}</span>
+                                        <span class="text-muted">({{ cat.count }})</span>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="mb-4">
+                        <label class="filter-heading">Brand / Atelier</label>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="brand" value="" id="brandAll" {% if not current_brand %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label text-white small" for="brandAll">All Brands</label>
+                            </div>
+                            {% for b in brands %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="brand" value="{{ b.slug }}" id="brand_{{ b.slug }}" {% if current_brand == b.slug %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label text-white small d-flex justify-content-between" for="brand_{{ b.slug }}">
+                                        <span>{{ b.name }}</span>
+                                        <span class="text-muted">({{ b.count }})</span>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Size Filter -->
+                    <div class="mb-4">
+                        <label class="filter-heading">US Men's Size</label>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for sz in available_sizes %}
+                                <a href="?{% if current_category %}category={{ current_category }}&{% endif %}{% if current_brand %}brand={{ current_brand }}&{% endif %}size={{ sz }}" 
+                                   class="size-pill-btn {% if current_size == sz %}active{% endif %}">
+                                    {{ sz }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Max Price Range -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <label class="filter-heading">Max Price</label>
+                            <span class="text-warning fw-bold small" id="priceDisplay">${{ current_max_price|default:"350" }}</span>
+                        </div>
+                        <input type="range" class="form-range" min="100" max="400" step="10" name="max_price" id="maxPriceInput" 
+                               value="{{ current_max_price|default:'350' }}" 
+                               oninput="document.getElementById('priceDisplay').textContent = '$' + this.value"
+                               onchange="this.form.submit()">
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>$100</span>
+                            <span>$400+</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-sole-primary w-100 btn-sm">
+                        Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Showcase & Header -->
+        <div class="col-lg-9">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-3 rounded-4 mb-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                <div class="text-muted small">
+                    Showing <strong class="text-white">{{ total_count }}</strong> shoe model{{ total_count|pluralize }}
+                    {% if current_category %}&bull; Category: <span class="text-warning">{{ current_category }}</span>{% endif %}
+                    {% if current_brand %}&bull; Brand: <span class="text-warning">{{ current_brand }}</span>{% endif %}
+                    {% if current_size %}&bull; Size: <span class="text-warning">US {{ current_size }}</span>{% endif %}
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <label class="text-muted small text-nowrap">Sort By:</label>
+                    <select class="form-select form-select-sm" style="width: auto;" onchange="location = this.value;">
+                        <option value="?sort=featured{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}" {% if current_sort == 'featured' %}selected{% endif %}>Featured First</option>
+                        <option value="?sort=price_low{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="?sort=price_high{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="?sort=rating{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}" {% if current_sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                        <option value="?sort=newest{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}" {% if current_sort == 'newest' %}selected{% endif %}>Newest Releases</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Shoe Cards Grid -->
+            {% if shoes %}
+                <div class="row g-4">
+                    {% for shoe in shoes %}
+                        <div class="col-md-6 col-xl-4">
+                            <div class="shoe-card">
+                                <div class="shoe-img-box">
+                                    {% if shoe.badge %}
+                                        <span class="badge bg-warning text-dark shoe-badge-top">{{ shoe.badge }}</span>
+                                    {% endif %}
+                                    <img src="{{ shoe.get_image_url }}" alt="{{ shoe.title }}" loading="lazy">
+                                    
+                                    <div class="shoe-quick-actions">
+                                        <button type="button" class="btn btn-sm btn-dark flex-grow-1 border border-secondary text-white" 
+                                                data-bs-toggle="modal" data-bs-target="#quickViewModal"
+                                                data-shoe-id="{{ shoe.id }}"
+                                                data-shoe-title="{{ shoe.title }}"
+                                                data-shoe-brand="{{ shoe.brand.name }}"
+                                                data-shoe-price="{{ shoe.price }}"
+                                                data-shoe-orig-price="{{ shoe.original_price|default:'' }}"
+                                                data-shoe-image="{{ shoe.get_image_url }}"
+                                                data-shoe-desc="{{ shoe.description }}"
+                                                data-shoe-slug="{{ shoe.slug }}">
+                                            <i class="bi bi-eye"></i> Quick View
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-sole-primary px-3 btn-add-to-cart-ajax"
+                                                data-shoe-id="{{ shoe.id }}"
+                                                data-shoe-title="{{ shoe.title }}">
+                                            <i class="bi bi-bag-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="shoe-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="shoe-brand-title">{{ shoe.brand.name }}</span>
+                                        <div class="d-flex align-items-center gap-1 text-warning small">
+                                            <i class="bi bi-star-fill"></i>
+                                            <span class="fw-bold">{{ shoe.rating }}</span>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="shoe-title">
+                                        <a href="{% url 'shoe_detail' shoe.slug %}" class="text-white hover-primary">{{ shoe.title }}</a>
+                                    </h3>
+
+                                    <p class="text-muted small line-clamp-2 mb-3">{{ shoe.tagline|default:shoe.description|truncatewords:10 }}</p>
+
+                                    <div class="d-flex flex-wrap gap-1 mb-3">
+                                        {% for sz in shoe.sizes.all|slice:":5" %}
+                                            <span class="badge rounded-pill border border-secondary border-opacity-50 text-white small py-1" style="font-size: 0.72rem; background: rgba(255, 255, 255, 0.08);">US {{ sz.size }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                                        <div class="d-flex align-items-baseline">
+                                            <span class="shoe-price">${{ shoe.price }}</span>
+                                            {% if shoe.original_price %}
+                                                <span class="shoe-original-price">${{ shoe.original_price }}</span>
+                                                <span class="shoe-discount-pill">-{{ shoe.discount_percent }}%</span>
+                                            {% endif %}
+                                        </div>
+                                        <a href="{% url 'shoe_detail' shoe.slug %}" class="btn btn-sm btn-outline-secondary text-white py-1 px-2" style="font-size: 0.8rem;">
+                                            Details <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <nav class="mt-5 d-flex justify-content-center" aria-label="Catalog pagination">
+                        <ul class="pagination pagination-sm gap-1">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link bg-dark text-white border-secondary" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">&laquo; Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                    <a class="page-link {% if page_obj.number == num %}btn-sole-primary text-white border-0{% else %}bg-dark text-white border-secondary{% endif %}" href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link bg-dark text-white border-secondary" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Next &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5 rounded-4" style="background: #111624; border: 1px dashed var(--border-subtle);">
+                    <i class="bi bi-search text-warning" style="font-size: 3rem;"></i>
+                    <h4 class="text-white fw-bold mt-3">No matching footwear found</h4>
+                    <p class="text-muted small">Try adjusting your filters, price range, or search term.</p>
+                    <a href="{% url 'store' %}" class="btn btn-sole-primary btn-sm mt-2">Clear All Filters</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,354 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SoleStride | Premium Footwear & High-Performance Kicks{% endblock %}</title>
+    <meta name="description" content="Shop world-class running shoes, designer streetwear, basketball sneakers, and bespoke handcrafted leather shoes. Real-time delivery tracking, 24/7 concierge helpline.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Top Announcement Bar -->
+    <div class="py-1 px-3 text-center small border-bottom border-secondary border-opacity-25" style="background: #0d121c; color: #94a3b8; font-size: 0.82rem;">
+        <span class="me-2 text-warning fw-bold"><i class="bi bi-lightning-charge-fill"></i> FLASH RELEASE:</span>
+        Complimentary FedEx Priority Shipping on all orders over $150 &bull; Use code <strong class="text-white">KICKS20</strong> for 20% OFF
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand brand-logo" href="{% url 'home' %}">
+                <span class="brand-dot"></span>
+                SOLESTRIDE
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="bi bi-house me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.resolver_match.url_name in 'store,shop' %}active{% endif %}" href="{% url 'store' %}">
+                            <i class="bi bi-grid-3x3-gap me-1"></i> Store & Shop
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'track_order' %}active{% endif %}" href="{% url 'track_order' %}">
+                            <i class="bi bi-geo-alt me-1"></i> Track Order
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'helpline' %}active{% endif %}" href="{% url 'helpline' %}">
+                            <i class="bi bi-headset me-1"></i> 24/7 Helpline
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">
+                            <i class="bi bi-shield-check me-1"></i> About Us
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'store' %}" class="btn btn-outline-secondary border-0 text-muted p-2" title="Search catalog">
+                        <i class="bi bi-search fs-5"></i>
+                    </a>
+
+                    <!-- User Account Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary border-0 text-white p-2 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5"></i>
+                            {% if user.is_authenticated %}
+                                <span class="d-none d-md-inline small fw-semibold">{{ user.first_name|default:user.username }}</span>
+                            {% else %}
+                                <span class="d-none d-md-inline small text-muted">Account</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary border-opacity-25" style="min-width: 200px; background: #131926;">
+                            {% if user.is_authenticated %}
+                                <li class="px-3 py-2 border-bottom border-secondary border-opacity-25">
+                                    <div class="small text-muted">Signed in as</div>
+                                    <div class="fw-bold text-white text-truncate">{{ user.email }}</div>
+                                </li>
+                                <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-speedometer2 me-2"></i> Account Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'track_order' %}"><i class="bi bi-truck me-2"></i> Track Shipments</a></li>
+                                <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+                                <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item py-2" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-2"></i> Sign In</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'register' %}"><i class="bi bi-person-plus me-2"></i> Create Account</a></li>
+                                <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'track_order' %}"><i class="bi bi-truck me-2"></i> Guest Order Tracking</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Cart Bag Button -->
+                    <button class="btn btn-sole-primary position-relative px-3 py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                        <i class="bi bi-bag-fill me-1"></i>
+                        <span class="d-none d-sm-inline">Bag</span>
+                        <span class="badge rounded-pill bg-light text-dark ms-1 cart-badge-count" style="display: {% if cart_count > 0 %}inline-block{% else %}none{% endif %};">
+                            {{ cart_count }}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Dismissible Messages -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show border-0 shadow-sm d-flex align-items-center gap-2" role="alert" style="background: rgba(30, 41, 59, 0.95); color: #fff; border-left: 4px solid var(--color-primary) !important;">
+                    <i class="bi bi-bell-fill text-warning"></i>
+                    <div>{{ message }}</div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-secondary border-opacity-25" style="border-radius: 20px; overflow: hidden; background: #111624;">
+                <div class="modal-header border-0 pb-0">
+                    <span class="badge bg-warning text-dark px-2 py-1 small fw-bold">QUICK PREVIEW</span>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 pt-2">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-4" style="background: #090c13;">
+                                <img id="qvShoeImage" src="" alt="Shoe Preview" class="img-fluid rounded-3 w-100" style="max-height: 350px; object-fit: contain;">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <span id="qvShoeBrand" class="text-muted text-uppercase small fw-bold tracking-wider">BRAND</span>
+                            <h3 id="qvShoeTitle" class="mt-1 text-white fw-bold mb-2">Shoe Title</h3>
+                            <div class="d-flex align-items-baseline gap-2 mb-3">
+                                <span id="qvShoePrice" class="fs-3 fw-bold text-white">$0.00</span>
+                                <span id="qvShoeOrigPrice" class="text-decoration-line-through text-muted small">$0.00</span>
+                            </div>
+                            <p id="qvShoeDesc" class="text-muted small line-clamp-3 mb-3">Description...</p>
+
+                            <div class="mb-3">
+                                <label class="small text-muted fw-bold mb-1">SELECT SIZE (US):</label>
+                                <select class="form-select form-select-sm" id="quickViewSizeSelect">
+                                    <option value="8.0">US 8.0</option>
+                                    <option value="8.5">US 8.5</option>
+                                    <option value="9.0">US 9.0</option>
+                                    <option value="9.5" selected>US 9.5 (Most Popular)</option>
+                                    <option value="10.0">US 10.0</option>
+                                    <option value="10.5">US 10.5</option>
+                                    <option value="11.0">US 11.0</option>
+                                    <option value="12.0">US 12.0</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" id="qvAddToCartBtn" class="btn btn-sole-primary flex-grow-1 btn-add-to-cart-ajax">
+                                    <i class="bi bi-bag-plus"></i> Add to Bag
+                                </button>
+                                <a id="qvDetailBtn" href="#" class="btn btn-sole-outline">
+                                    Full Specs <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Offcanvas Shopping Bag Drawer -->
+    <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel" style="width: 420px; max-width: 90vw;">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
+            <h5 class="offcanvas-title text-white fw-bold d-flex align-items-center gap-2" id="cartOffcanvasLabel">
+                <i class="bi bi-bag-check text-warning"></i> Your Shopping Bag
+                <span class="badge bg-secondary rounded-pill cart-badge-count">{{ cart_count }}</span>
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-3">
+            <div class="p-2 mb-3 rounded-3" style="background: rgba(255, 85, 0, 0.08); border: 1px dashed rgba(255, 85, 0, 0.3);">
+                <div class="d-flex justify-content-between small text-white mb-1">
+                    <span><i class="bi bi-truck text-warning me-1"></i> FedEx Air Shipping</span>
+                    <span class="text-warning fw-bold">FREE over $150</span>
+                </div>
+            </div>
+
+            <div class="flex-grow-1 overflow-y-auto" id="cartDrawerItems">
+                <div class="text-center py-4 text-muted">
+                    <div class="spinner-border text-warning spinner-border-sm mb-2" role="status"></div>
+                    <p class="small">Retrieving your bag items...</p>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary border-opacity-25 pt-3 mt-auto">
+                <div class="d-flex justify-content-between text-muted mb-2">
+                    <span>Bag Subtotal:</span>
+                    <span class="fw-bold text-white fs-5" id="cartDrawerSubtotal">${{ cart_subtotal }}</span>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cart' %}" class="btn btn-sole-outline">
+                        <i class="bi bi-bag"></i> View Bag & Apply Coupon
+                    </a>
+                    <a href="{% url 'checkout' %}" class="btn btn-sole-primary">
+                        Checkout Now <i class="bi bi-lock-fill ms-1"></i>
+                    </a>
+                </div>
+                <div class="text-center mt-2">
+                    <span class="text-muted small" style="font-size: 0.75rem;"><i class="bi bi-shield-check text-success"></i> 256-Bit Encrypted High-Speed Checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Live Support Concierge Widget -->
+    <button class="chat-widget-btn" id="chatWidgetBtn" title="24/7 Footwear Concierge Chat" aria-label="Open Live Chat">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+    <div class="chat-box-modal" id="chatBoxModal">
+        <div class="chat-header">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative">
+                    <span class="badge bg-success rounded-circle p-1 position-absolute bottom-0 end-0"></span>
+                    <i class="bi bi-robot fs-4 text-warning"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-white fw-bold">SoleStride Concierge</h6>
+                    <small class="text-muted" style="font-size: 0.72rem;">Online &bull; Instant Footwear AI</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white btn-sm" id="chatCloseBtn"></button>
+        </div>
+        <div class="chat-body" id="chatBodyMessages">
+            <div class="chat-bubble bot">
+                Hello! Welcome to <strong>SoleStride</strong>. I can help with sizing guides, order status, or shoe recommendations. How can I assist you today?
+            </div>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 chat-quick-prompt small text-white" style="font-size: 0.75rem;">Track my order</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 chat-quick-prompt small text-white" style="font-size: 0.75rem;">Sizing guide</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 chat-quick-prompt small text-white" style="font-size: 0.75rem;">Return policy</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 chat-quick-prompt small text-white" style="font-size: 0.75rem;">Discount codes</button>
+            </div>
+        </div>
+        <form class="chat-footer" id="chatInputForm">
+            <input type="text" class="form-control form-control-sm" id="chatInputText" placeholder="Ask anything about our shoes..." autocomplete="off">
+            <button type="submit" class="btn btn-sole-primary btn-sm px-3">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4 col-md-6">
+                    <a class="brand-logo mb-3 d-inline-flex" href="{% url 'home' %}">
+                        <span class="brand-dot"></span>
+                        SOLESTRIDE
+                    </a>
+                    <p class="text-muted small pe-lg-4">
+                        Pioneering athletic engineering and bespoke shoemaking. Every silhouette in our catalog is rigorously verified for supreme comfort, kinetic energy return, and long-lasting durability.
+                    </p>
+                    <div class="d-flex gap-3 text-muted fs-5">
+                        <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">Explore</h6>
+                    <ul class="list-unstyled small text-muted d-flex flex-column gap-2">
+                        <li><a href="{% url 'store' %}?category=running">Running Shoes</a></li>
+                        <li><a href="{% url 'store' %}?category=streetwear">Streetwear Kicks</a></li>
+                        <li><a href="{% url 'store' %}?category=basketball">Court & Basketball</a></li>
+                        <li><a href="{% url 'store' %}?category=luxury">Luxury Oxfords</a></li>
+                        <li><a href="{% url 'store' %}">New Arrivals 2026</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">Customer Care</h6>
+                    <ul class="list-unstyled small text-muted d-flex flex-column gap-2">
+                        <li><a href="{% url 'track_order' %}">Track Active Order</a></li>
+                        <li><a href="{% url 'helpline' %}">24/7 Helpline Support</a></li>
+                        <li><a href="{% url 'helpline' %}#faq">Sizing & Fit FAQ</a></li>
+                        <li><a href="{% url 'helpline' %}#returns">30-Day Guarantee</a></li>
+                        <li><a href="{% url 'about' %}">Authenticity Lab</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">VIP Kicks Newsletter</h6>
+                    <p class="text-muted small">Subscribe to receive exclusive access to limited-drop releases and a $20 voucher for your first purchase.</p>
+                    <form onsubmit="event.preventDefault(); showToast('Subscribed to VIP drops! Check your inbox.', 'success');" class="d-flex gap-2">
+                        <input type="email" class="form-control form-control-sm" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-sole-primary btn-sm text-nowrap">Join VIP</button>
+                    </form>
+                    <div class="d-flex align-items-center gap-3 mt-3 text-muted small">
+                        <span><i class="bi bi-shield-lock-fill text-success"></i> Spam-free</span>
+                        <span>&bull;</span>
+                        <span><i class="bi bi-truck text-warning"></i> Priority Drops</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary border-opacity-25 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small text-muted">
+                <div>
+                    &copy; 2026 <strong>SoleStride Footwear Inc.</strong> All rights reserved. Built for extreme concurrency & luxury aesthetic.
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="#">Privacy Policy</a>
+                    <span>&bull;</span>
+                    <a href="#">Terms of Service</a>
+                    <span>&bull;</span>
+                    <a href="#">Security Protocol</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS Engine -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

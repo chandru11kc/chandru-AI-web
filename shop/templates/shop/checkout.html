@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Secure Checkout | SoleStride Footwear{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <h1 class="text-white fw-bold display-font mb-1">Express Checkout</h1>
+        <p class="text-muted small mb-0"><i class="bi bi-shield-lock-fill text-success"></i> 256-bit Encrypted Checkout &bull; FedEx Express Dispatch</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <form method="POST" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <div class="row g-5">
+            <!-- Left: Shipping & Payment Form -->
+            <div class="col-lg-7">
+                <div class="p-4 rounded-4 mb-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <h5 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark rounded-circle px-2">1</span> Contact Information
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Full Name *</label>
+                            <input type="text" name="name" class="form-control" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Alex Mercer{% endif %}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Email Address *</label>
+                            <input type="email" name="email" class="form-control" value="{% if user.is_authenticated %}{{ user.email }}{% else %}alex.mercer@example.com{% endif %}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Phone Number (For Delivery SMS Updates) *</label>
+                            <input type="tel" name="phone" class="form-control" value="+1 (555) 392-8401" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-4 mb-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <h5 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark rounded-circle px-2">2</span> Shipping Address
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Street Address *</label>
+                            <input type="text" name="address" class="form-control" value="742 Evergreen Terrace, Suite 400" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label text-muted small fw-bold">City *</label>
+                            <input type="text" name="city" class="form-control" value="New York" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-bold">Zip Code *</label>
+                            <input type="text" name="postal_code" class="form-control" value="10001" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold">Country *</label>
+                            <select name="country" class="form-select">
+                                <option value="United States" selected>United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Germany">Germany</option>
+                                <option value="Australia">Australia</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-4 mb-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <h5 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark rounded-circle px-2">3</span> Payment Method
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3 mb-3">
+                        <div class="form-check p-3 rounded-3 border border-secondary border-opacity-25" style="background: rgba(255, 255, 255, 0.02);">
+                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="payCard" value="CARD" checked>
+                            <label class="form-check-label text-white fw-semibold d-flex align-items-center justify-content-between w-100" for="payCard">
+                                <span><i class="bi bi-credit-card-2-front text-warning me-2"></i> Credit or Debit Card</span>
+                                <span class="d-flex gap-1 text-muted fs-5">
+                                    <i class="bi bi-credit-card"></i>
+                                </span>
+                            </label>
+                            <div class="mt-3 row g-2">
+                                <div class="col-12">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Card Number (4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242)" value="4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control form-control-sm" placeholder="MM/YY" value="12/28">
+                                </div>
+                                <div class="col-6">
+                                    <input type="password" class="form-control form-control-sm" placeholder="CVC" value="888">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border border-secondary border-opacity-25" style="background: rgba(255, 255, 255, 0.02);">
+                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="payApple" value="APPLE_PAY">
+                            <label class="form-check-label text-white fw-semibold" for="payApple">
+                                <i class="bi bi-apple me-2 text-warning"></i> Apple Pay / Google Pay (1-Touch)
+                            </label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border border-secondary border-opacity-25" style="background: rgba(255, 255, 255, 0.02);">
+                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="payCOD" value="COD">
+                            <label class="form-check-label text-white fw-semibold" for="payCOD">
+                                <i class="bi bi-cash-stack me-2 text-warning"></i> Cash on Delivery (COD)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-sole-primary w-100 py-3 fs-5 fw-bold">
+                    Confirm & Complete Order &bull; ${{ total }}
+                </button>
+            </div>
+
+            <!-- Right: Order Summary Breakdown -->
+            <div class="col-lg-5">
+                <div class="p-4 rounded-4 position-sticky top-0" style="background: #111624; border: 1px solid var(--border-subtle); top: 100px;">
+                    <h5 class="text-white fw-bold mb-3 display-font">Bag Review ({{ cart.total_items }} items)</h5>
+
+                    <div class="d-flex flex-column gap-3 mb-4 max-h-350 overflow-y-auto">
+                        {% for item in cart_items %}
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ item.shoe.get_image_url }}" alt="{{ item.shoe.title }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <div class="text-white small fw-bold">{{ item.shoe.title }}</div>
+                                    <div class="text-muted small">Size: US {{ item.size }} &bull; Qty: {{ item.quantity }}</div>
+                                </div>
+                                <div class="text-white small fw-bold">${{ item.subtotal }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="border-top border-secondary border-opacity-25 pt-3">
+                        <div class="d-flex justify-content-between text-muted small mb-2">
+                            <span>Subtotal:</span>
+                            <span class="text-white">${{ subtotal }}</span>
+                        </div>
+                        {% if discount > 0 %}
+                            <div class="d-flex justify-content-between text-success small mb-2">
+                                <span>Discount:</span>
+                                <span>-${{ discount }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between text-muted small mb-3">
+                            <span>FedEx Delivery:</span>
+                            {% if shipping == 0 %}
+                                <span class="text-success fw-bold">FREE</span>
+                            {% else %}
+                                <span class="text-white">${{ shipping }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between text-white fw-bold fs-5 pt-2 border-top border-secondary border-opacity-25">
+                            <span>Total Due:</span>
+                            <span class="display-font text-warning">${{ total }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-3 text-muted small" style="background: rgba(255, 255, 255, 0.03);">
+                        <i class="bi bi-clock-history text-warning me-1"></i> Order placed now ships within 24 hours. A real-time tracking code will be immediately issued.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

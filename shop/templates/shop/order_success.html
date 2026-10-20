@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed | SoleStride Footwear{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center my-4">
+    <div class="p-4 p-md-5 rounded-4 shadow-lg mx-auto" style="max-width: 720px; background: #111624; border: 1px solid var(--border-subtle);">
+        <div class="p-3 rounded-circle d-inline-flex mb-3" style="background: rgba(16, 185, 129, 0.15);">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 3.5rem;"></i>
+        </div>
+
+        <span class="badge bg-success bg-opacity-25 text-success small px-3 py-1 mb-2 d-inline-block">ORDER CONFIRMED & PAYMENT CAPTURED</span>
+        <h2 class="text-white fw-bold display-font mb-2">Thank You For Your Order!</h2>
+        <p class="text-muted small mb-4">
+            We've sent an automated confirmation invoice to <strong class="text-white">{{ order.customer_email }}</strong>. Our logistics robotics are currently packaging your footwear.
+        </p>
+
+        <!-- Tracking Code Card -->
+        <div class="p-4 rounded-4 mb-4 text-start" style="background: #090c13; border: 1px solid rgba(255, 85, 0, 0.3);">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-7">
+                    <span class="text-muted small text-uppercase fw-bold">Live Tracking Code</span>
+                    <div class="fs-4 fw-bold text-warning display-font" id="displayTrackingCode">{{ order.tracking_code }}</div>
+                    <div class="text-muted small">Order Reference: #{{ order.order_number }}</div>
+                </div>
+                <div class="col-md-5 text-md-end">
+                    <button class="btn btn-sole-outline btn-sm me-1" id="copyTrackingBtn" data-code="{{ order.tracking_code }}">
+                        <i class="bi bi-copy"></i> Copy
+                    </button>
+                    <a href="{% url 'track_order' %}?code={{ order.tracking_code }}" class="btn btn-sole-primary btn-sm">
+                        <i class="bi bi-geo-alt"></i> Track Live
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items Preview -->
+        <div class="text-start p-3 rounded-3 mb-4" style="background: rgba(255, 255, 255, 0.02);">
+            <h6 class="text-white fw-bold mb-3 small text-uppercase">Shipment Details</h6>
+            <div class="d-flex flex-column gap-2">
+                {% for item in order.items.all %}
+                    <div class="d-flex justify-content-between align-items-center small">
+                        <span class="text-white">{{ item.quantity }}x {{ item.shoe.title }} (US {{ item.size }})</span>
+                        <span class="text-muted">${{ item.subtotal }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="border-top border-secondary border-opacity-25 mt-3 pt-2 d-flex justify-content-between text-white fw-bold small">
+                <span>Total Amount Paid:</span>
+                <span class="text-warning">${{ order.total_amount }}</span>
+            </div>
+            <div class="text-muted small mt-2">
+                <i class="bi bi-truck text-warning me-1"></i> Estimated Delivery: <strong class="text-white">{{ order.estimated_delivery }}</strong> to {{ order.city }}, {{ order.postal_code }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'track_order' %}?code={{ order.tracking_code }}" class="btn btn-sole-primary">
+                <i class="bi bi-truck me-1"></i> View Live Delivery Status
+            </a>
+            <a href="{% url 'store' %}" class="btn btn-sole-outline">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

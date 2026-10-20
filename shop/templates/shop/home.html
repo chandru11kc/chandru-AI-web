@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SoleStride | The Future of Footwear & High-Performance Kicks{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-wrapper">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 border border-secondary border-opacity-25" style="background: rgba(255, 85, 0, 0.1);">
+                    <span class="badge rounded-pill bg-warning text-dark fw-bold">NEW IN 2026</span>
+                    <span class="text-white small fw-semibold">Next-Gen Dual Carbon Propulsion</span>
+                </div>
+
+                <h1 class="hero-title text-white">
+                    PRECISION CRAFT.<br>
+                    <span class="hero-gradient-text">UNMATCHED POWER.</span>
+                </h1>
+
+                <p class="text-muted fs-5 mb-4 pe-lg-4" style="line-height: 1.6;">
+                    Discover footwear engineered at the intersection of biomechanical precision and haute streetwear design. Zero compromises on velocity, cushioning, or durability.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mb-5">
+                    <a href="{% url 'store' %}" class="btn btn-sole-primary">
+                        <i class="bi bi-bag-check-fill"></i> Shop Premium Catalog
+                    </a>
+                    <a href="{% url 'track_order' %}" class="btn btn-sole-outline">
+                        <i class="bi bi-geo-alt-fill text-warning"></i> Track Your Shipment
+                    </a>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="row g-3 pt-3 border-top border-secondary border-opacity-25">
+                    <div class="col-4">
+                        <div class="fs-3 fw-bold text-white display-font">88%</div>
+                        <div class="text-muted small">Kinetic Rebound</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fs-3 fw-bold text-white display-font">230g</div>
+                        <div class="text-muted small">Ultra-Featherweight</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fs-3 fw-bold text-white display-font">48hr</div>
+                        <div class="text-muted small">Global Delivery</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Showcase Card -->
+            <div class="col-lg-6">
+                <div class="hero-shoe-card">
+                    <img src="{% static 'images/hero_banner.jpg' %}" alt="Nexus Turbo Sneaker" class="hero-img-display">
+                    
+                    <div class="hero-floating-badge">
+                        <div class="rounded-circle p-2" style="background: rgba(255, 85, 0, 0.2);">
+                            <i class="bi bi-lightning-charge-fill text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-white fw-bold">Nexus Turbo React X-1</div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-warning fw-bold">$189.99</span>
+                                <span class="badge bg-success small py-1">In Stock</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'shoe_detail' 'nexus-turbo-react-x1' %}" class="btn btn-sm btn-sole-primary ms-3 py-1 px-3">
+                            View <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust & Performance Banner -->
+<section class="py-4 border-top border-bottom border-secondary border-opacity-25" style="background: #0c101a;">
+    <div class="container">
+        <div class="row g-4 text-center text-md-start">
+            <div class="col-lg-3 col-sm-6">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="perk-icon-wrap mb-0"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <h6 class="text-white mb-0 fw-bold">100% Authentic</h6>
+                        <small class="text-muted">NFC hologram verified tags</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="perk-icon-wrap mb-0"><i class="bi bi-truck"></i></div>
+                    <div>
+                        <h6 class="text-white mb-0 fw-bold">48-Hr FedEx Priority</h6>
+                        <small class="text-muted">Live real-time GPS tracking</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="perk-icon-wrap mb-0"><i class="bi bi-arrow-counterclockwise"></i></div>
+                    <div>
+                        <h6 class="text-white mb-0 fw-bold">30-Day Risk-Free</h6>
+                        <small class="text-muted">Free returns & zero-hassle fit</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="perk-icon-wrap mb-0"><i class="bi bi-headset"></i></div>
+                    <div>
+                        <h6 class="text-white mb-0 fw-bold">24/7 Helpline Support</h6>
+                        <small class="text-muted">Live footwear specialists</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Shoes Showcase -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+            <div>
+                <span class="text-warning text-uppercase small fw-bold tracking-wider">CURATED EXCELLENCE</span>
+                <h2 class="text-white fw-bold mt-1 mb-0 display-font">Flagship Showcase</h2>
+            </div>
+            <a href="{% url 'store' %}" class="btn btn-sole-outline btn-sm mt-3 mt-md-0">
+                View Entire Collection ({{ featured_shoes.count }}+) <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for shoe in featured_shoes %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="shoe-card">
+                        <div class="shoe-img-box">
+                            {% if shoe.badge %}
+                                <span class="badge bg-warning text-dark shoe-badge-top">{{ shoe.badge }}</span>
+                            {% endif %}
+                            <img src="{{ shoe.get_image_url }}" alt="{{ shoe.title }}" loading="lazy">
+                            
+                            <div class="shoe-quick-actions">
+                                <button type="button" class="btn btn-sm btn-dark flex-grow-1 border border-secondary text-white" 
+                                        data-bs-toggle="modal" data-bs-target="#quickViewModal"
+                                        data-shoe-id="{{ shoe.id }}"
+                                        data-shoe-title="{{ shoe.title }}"
+                                        data-shoe-brand="{{ shoe.brand.name }}"
+                                        data-shoe-price="{{ shoe.price }}"
+                                        data-shoe-orig-price="{{ shoe.original_price|default:'' }}"
+                                        data-shoe-image="{{ shoe.get_image_url }}"
+                                        data-shoe-desc="{{ shoe.description }}"
+                                        data-shoe-slug="{{ shoe.slug }}">
+                                    <i class="bi bi-eye"></i> Quick View
+                                </button>
+                                <button type="button" class="btn btn-sm btn-sole-primary px-3 btn-add-to-cart-ajax"
+                                        data-shoe-id="{{ shoe.id }}"
+                                        data-shoe-title="{{ shoe.title }}">
+                                    <i class="bi bi-bag-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="shoe-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="shoe-brand-title">{{ shoe.brand.name }}</span>
+                                <div class="d-flex align-items-center gap-1 text-warning small">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span class="fw-bold">{{ shoe.rating }}</span>
+                                    <span class="text-muted">({{ shoe.review_count }})</span>
+                                </div>
+                            </div>
+
+                            <h3 class="shoe-title">
+                                <a href="{% url 'shoe_detail' shoe.slug %}" class="text-white hover-primary">{{ shoe.title }}</a>
+                            </h3>
+
+                            <p class="text-muted small line-clamp-2 mb-3">{{ shoe.tagline|default:shoe.description|truncatewords:12 }}</p>
+
+                            <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                                <div class="d-flex align-items-baseline">
+                                    <span class="shoe-price">${{ shoe.price }}</span>
+                                    {% if shoe.original_price %}
+                                        <span class="shoe-original-price">${{ shoe.original_price }}</span>
+                                        <span class="shoe-discount-pill">-{{ shoe.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'shoe_detail' shoe.slug %}" class="text-warning small fw-bold">
+                                    Specs <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5" style="background: #090c14;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">CATEGORIES</span>
+            <h2 class="text-white fw-bold mt-1 display-font">Built for Every Arena</h2>
+            <p class="text-muted">Tailored silhouettes engineered for high-altitude running, hardwood dominance, and black-tie galas.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for cat in categories %}
+                <div class="col-lg-3 col-sm-6">
+                    <a href="{% url 'store' %}?category={{ cat.slug }}" class="perk-card d-block text-decoration-none">
+                        <div class="perk-icon-wrap">
+                            <i class="bi {{ cat.icon }}"></i>
+                        </div>
+                        <h5 class="text-white fw-bold mb-1">{{ cat.name }}</h5>
+                        <p class="text-muted small mb-2">{{ cat.description|truncatewords:10 }}</p>
+                        <span class="text-warning small fw-bold">
+                            Explore {{ cat.shoe_count }} Models <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Footwear Engineering Highlights -->
+<section class="py-5 border-top border-secondary border-opacity-25">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="{% static 'images/shoe_stealth_carbon.jpg' %}" alt="Tech Preview" class="img-fluid rounded-4 shadow-lg border border-secondary border-opacity-25 w-100" style="max-height: 480px; object-fit: cover;">
+                    <div class="position-absolute top-0 start-0 m-3 badge bg-dark text-warning border border-secondary px-3 py-2">
+                        <i class="bi bi-cpu-fill me-1"></i> AERO-LAB PATENT #4892
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="text-warning text-uppercase small fw-bold tracking-wider">NEXT-GEN ARCHITECTURE</span>
+                <h2 class="text-white fw-bold mt-1 mb-4 display-font">Why SoleStride Outperforms Every Standard Sneaker</h2>
+
+                <div class="d-flex flex-column gap-4">
+                    <div class="d-flex gap-3">
+                        <div class="perk-icon-wrap flex-shrink-0 mb-0"><i class="bi bi-bezier2"></i></div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-1">Dual Carbon-Fiber Propulsion Spoon</h5>
+                            <p class="text-muted small mb-0">Stores mechanical energy during heel strike and discharges it with an explosive 88% kinetic rebound into your toe-off.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="perk-icon-wrap flex-shrink-0 mb-0"><i class="bi bi-wind"></i></div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-1">AeroFiber 360&deg; Hydrophobic Knit</h5>
+                            <p class="text-muted small mb-0">Micro-perforated yarn channels sweat vapor outward while deflecting road rain and moisture, weighing barely 230 grams.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="perk-icon-wrap flex-shrink-0 mb-0"><i class="bi bi-shield-shaded"></i></div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-1">Lifetime Re-soleable Italian Welt</h5>
+                            <p class="text-muted small mb-0">Our luxury dress line uses traditional Goodyear welting with hand-buffed Tuscan calfskin for generational longevity.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    <a href="{% url 'about' %}" class="btn btn-sole-outline">
+                        Read Our Brand Story <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Reviews Section -->
+<section class="py-5" style="background: #080b12;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">VERIFIED PRAISE</span>
+            <h2 class="text-white fw-bold mt-1 display-font">Worn By Athletes, Curated by Connoisseurs</h2>
+        </div>
+
+        <div class="row g-4">
+            {% for rev in latest_reviews %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="perk-card h-100 d-flex flex-direction-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% endfor %}
+                            </div>
+                            <span class="badge bg-success bg-opacity-25 text-success small"><i class="bi bi-patch-check-fill me-1"></i> Verified</span>
+                        </div>
+                        <h6 class="text-white fw-bold mb-1">"{{ rev.headline }}"</h6>
+                        <p class="text-muted small flex-grow-1">"{{ rev.comment }}"</p>
+                        <div class="pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                            <span class="text-white small fw-bold">{{ rev.user_name }}</span>
+                            <span class="text-muted small">{{ rev.shoe.title }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Delivery CTA Section -->
+<section class="py-5 text-center position-relative overflow-hidden" style="background: radial-gradient(circle, rgba(255,85,0,0.15) 0%, rgba(10,14,22,1) 80%);">
+    <div class="container py-4">
+        <h2 class="text-white fw-bold display-font mb-3">Ready to Elevate Your Stride?</h2>
+        <p class="text-muted fs-5 mb-4 max-w-600 mx-auto">
+            Order today and experience 48-Hour FedEx Priority dispatch with real-time GPS delivery updates right to your door.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'store' %}" class="btn btn-sole-primary btn-lg px-4">
+                <i class="bi bi-bag-fill me-1"></i> Shop The Catalog
+            </a>
+            <a href="{% url 'track_order' %}" class="btn btn-sole-outline btn-lg px-4">
+                <i class="bi bi-geo-alt me-1"></i> Track Existing Order
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

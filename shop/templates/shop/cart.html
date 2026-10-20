@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Bag | SoleStride Footwear{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <h1 class="text-white fw-bold display-font mb-1">Your Shopping Bag</h1>
+        <p class="text-muted small mb-0">Review your selected footwear before proceeding to high-speed checkout.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    {% if cart_items %}
+        <div class="row g-5">
+            <!-- Items Table -->
+            <div class="col-lg-8">
+                <!-- Free Shipping Indicator -->
+                <div class="p-3 mb-4 rounded-4" style="background: rgba(255, 85, 0, 0.08); border: 1px dashed rgba(255, 85, 0, 0.3);">
+                    <div class="d-flex justify-content-between small text-white mb-2">
+                        <span><i class="bi bi-truck text-warning me-2"></i> FedEx Priority Shipping</span>
+                        {% if subtotal >= 150 or coupon_code == 'FREESHIP' %}
+                            <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Unlocked FREE Delivery!</span>
+                        {% else %}
+                            <span class="text-warning">Add more to unlock FREE Delivery!</span>
+                        {% endif %}
+                    </div>
+                    <div class="progress" style="height: 6px; background: rgba(255, 255, 255, 0.1);">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {% if subtotal >= 150 or coupon_code == 'FREESHIP' %}100%{% else %}{{ subtotal|floatformat:0 }}%{% endif %};"></div>
+                    </div>
+                </div>
+
+                <div class="table-responsive rounded-4 shadow-sm" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <table class="table table-dark table-borderless align-middle mb-0">
+                        <thead class="border-bottom border-secondary border-opacity-25 text-muted small text-uppercase">
+                            <tr>
+                                <th class="py-3 px-4">Footwear</th>
+                                <th class="py-3 text-center">Size</th>
+                                <th class="py-3 text-center">Quantity</th>
+                                <th class="py-3 text-end">Price</th>
+                                <th class="py-3 text-end px-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                                <tr class="border-bottom border-secondary border-opacity-10">
+                                    <td class="py-3 px-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ item.shoe.get_image_url }}" alt="{{ item.shoe.title }}" class="rounded-3" style="width: 75px; height: 75px; object-fit: cover; background: #0c0f17;">
+                                            <div>
+                                                <span class="text-muted small text-uppercase fw-bold">{{ item.shoe.brand.name }}</span>
+                                                <h6 class="mb-0 text-white fw-bold">
+                                                    <a href="{% url 'shoe_detail' item.shoe.slug %}" class="text-white">{{ item.shoe.title }}</a>
+                                                </h6>
+                                                <span class="text-muted small">${{ item.shoe.price }} each</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary bg-opacity-25 text-white px-2 py-1">US {{ item.size }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-inline-flex align-items-center border border-secondary border-opacity-50 rounded-pill px-2 py-1">
+                                            <button class="btn btn-sm text-white p-0 px-1" onclick="updateCartItemQty({{ item.id }}, 'decrease')"><i class="bi bi-dash"></i></button>
+                                            <span class="fw-bold px-2 small">{{ item.quantity }}</span>
+                                            <button class="btn btn-sm text-white p-0 px-1" onclick="updateCartItemQty({{ item.id }}, 'increase')"><i class="bi bi-plus"></i></button>
+                                        </div>
+                                    </td>
+                                    <td class="text-end fw-bold text-white fs-6">
+                                        ${{ item.subtotal }}
+                                    </td>
+                                    <td class="text-end px-4">
+                                        <button class="btn btn-sm btn-outline-danger border-0" onclick="updateCartItemQty({{ item.id }}, 'remove')" title="Remove item">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{% url 'store' %}" class="btn btn-sole-outline btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Summary & Checkout -->
+            <div class="col-lg-4">
+                <div class="p-4 rounded-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <h5 class="text-white fw-bold mb-4 display-font">Order Summary</h5>
+
+                    <!-- Promo Code Form -->
+                    <form method="POST" action="{% url 'apply_coupon' %}" class="mb-4">
+                        {% csrf_token %}
+                        <label class="small text-muted mb-1 fw-bold">DISCOUNT / PROMO CODE</label>
+                        <div class="input-group">
+                            <input type="text" name="coupon_code" value="{{ coupon_code }}" class="form-control form-control-sm text-uppercase" placeholder="Try KICKS20">
+                            <button type="submit" class="btn btn-sole-primary btn-sm">Apply</button>
+                        </div>
+                        <small class="text-muted" style="font-size: 0.72rem;">Available codes: <strong>KICKS20</strong> (20% Off), <strong>FREESHIP</strong></small>
+                    </form>
+
+                    <div class="d-flex justify-content-between text-muted small mb-2">
+                        <span>Items Subtotal:</span>
+                        <span class="text-white fw-semibold">${{ subtotal }}</span>
+                    </div>
+
+                    {% if discount > 0 %}
+                        <div class="d-flex justify-content-between small text-success mb-2">
+                            <span>Promo Discount ({{ coupon_code }}):</span>
+                            <span class="fw-bold">-${{ discount }}</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between text-muted small mb-3 pb-3 border-bottom border-secondary border-opacity-25">
+                        <span>FedEx Priority Shipping:</span>
+                        {% if shipping == 0 %}
+                            <span class="text-success fw-bold">FREE</span>
+                        {% else %}
+                            <span class="text-white">${{ shipping }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-baseline mb-4">
+                        <span class="fs-5 text-white fw-bold">Total Due:</span>
+                        <span class="display-font fs-3 fw-bold text-white">${{ total }}</span>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="btn btn-sole-primary w-100 py-3 fs-6">
+                        Proceed to Checkout <i class="bi bi-shield-lock-fill ms-1"></i>
+                    </a>
+
+                    <div class="text-center mt-3 text-muted small" style="font-size: 0.75rem;">
+                        <i class="bi bi-shield-check text-success me-1"></i> SSL Protected &bull; 30-Day Money Back Guarantee
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5 rounded-4 shadow-sm" style="background: #111624; border: 1px dashed var(--border-subtle);">
+            <div class="p-4 rounded-circle d-inline-flex mb-3" style="background: rgba(255, 85, 0, 0.1);">
+                <i class="bi bi-bag-x text-warning" style="font-size: 3.5rem;"></i>
+            </div>
+            <h3 class="text-white fw-bold display-font">Your Shopping Bag is Empty</h3>
+            <p class="text-muted small max-w-500 mx-auto mb-4">
+                Looks like you haven't selected any kicks yet. Check out our high-performance runners, retro court high-tops, or luxury Italian leather shoes.
+            </p>
+            <a href="{% url 'store' %}" class="btn btn-sole-primary px-4 py-2">
+                <i class="bi bi-grid-fill me-1"></i> Explore Shoe Catalog
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

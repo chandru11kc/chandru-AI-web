@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About SoleStride | Engineering The Future of Footwear{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <h1 class="text-white fw-bold display-font mb-1">About SoleStride</h1>
+        <p class="text-muted small mb-0">The narrative of athletic propulsion, materials science, and uncompromising craftsmanship.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Brand Story Hero -->
+    <div class="row align-items-center g-5 mb-5">
+        <div class="col-lg-6">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">OUR MISSION</span>
+            <h2 class="text-white fw-bold display-font mt-1 mb-3">Defying Gravity One Stride at a Time</h2>
+            <p class="text-muted" style="line-height: 1.8;">
+                SoleStride was conceived in 2021 by a collective of biomechanical engineers, marathon runners, and master Italian cordwainers. Frustrated by commercial mass-market sneakers that sacrificed joint stability for flashy marketing, we established our own advanced prototyping facility in Brooklyn, New York.
+            </p>
+            <p class="text-muted" style="line-height: 1.8;">
+                Today, every model in our catalog—from our dual carbon-plate marathon racers to our hand-burnished Florentine brogues—undergoes rigorous kinetic testing to ensure optimal rebound, zero arch strain, and enduring aesthetic mastery.
+            </p>
+            <div class="d-flex gap-3 mt-4">
+                <a href="{% url 'store' %}" class="btn btn-sole-primary">
+                    <i class="bi bi-bag-fill me-1"></i> Explore The Collection
+                </a>
+                <a href="{% url 'track_order' %}" class="btn btn-sole-outline">
+                    Track Existing Shipment
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="p-3 rounded-4 shadow-lg" style="background: #111624; border: 1px solid var(--border-subtle);">
+                <img src="{% static 'images/hero_banner.jpg' %}" alt="Footwear Lab" class="img-fluid rounded-3 w-100 shadow" style="max-height: 420px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Core Pillars Grid -->
+    <div class="my-5 py-4 border-top border-bottom border-secondary border-opacity-25">
+        <div class="text-center mb-5">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">FOUNDATIONAL PILLARS</span>
+            <h3 class="text-white fw-bold mt-1 display-font">The SoleStride Standard</h3>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-cpu-fill"></i></div>
+                    <h5 class="text-white fw-bold mb-2">Aerospace Polymers</h5>
+                    <p class="text-muted small">Supercritical PEBAX foams and autoclave-cured carbon fibers deliver 88% mechanical energy return.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-recycle"></i></div>
+                    <h5 class="text-white fw-bold mb-2">Sustainable Materials</h5>
+                    <p class="text-muted small">Hydrophobic upper yarns spun from 100% recycled maritime plastics and natural algae-derived outsoles.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-gem"></i></div>
+                    <h5 class="text-white fw-bold mb-2">Generational Craft</h5>
+                    <p class="text-muted small">Our luxury dress silhouettes are bench-made with Goodyear welt construction and hand-burnished patinas.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-truck"></i></div>
+                    <h5 class="text-white fw-bold mb-2">Live Telemetry</h5>
+                    <p class="text-muted small">Every package is tracked down to the courier van coordinates for full end-to-end delivery visibility.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Numbers Counter -->
+    <div class="row g-4 py-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="display-font fs-1 fw-bold text-white">500K+</div>
+            <div class="text-muted small">Athletes Powered Globally</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="display-font fs-1 fw-bold text-warning">99.8%</div>
+            <div class="text-muted small">On-Time FedEx Delivery</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="display-font fs-1 fw-bold text-white">48</div>
+            <div class="text-muted small">Countries Served</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="display-font fs-1 fw-bold text-warning">4.9 / 5</div>
+            <div class="text-muted small">Verified Athlete Rating</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

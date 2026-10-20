@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ shoe.title }} - {{ shoe.brand.name }} | SoleStride{% endblock %}
+
+{% block content %}
+<div class="py-3 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'store' %}" class="text-muted">Store</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'store' %}?category={{ shoe.category.slug }}" class="text-muted">{{ shoe.category.name }}</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ shoe.title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <!-- Left: Product Image & Biomechanical Specs -->
+        <div class="col-lg-6">
+            <div class="position-relative p-4 rounded-4 shadow-lg mb-4" style="background: #0b0f19; border: 1px solid var(--border-subtle);">
+                {% if shoe.badge %}
+                    <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-4 fw-bold px-3 py-2">{{ shoe.badge }}</span>
+                {% endif %}
+                <img src="{{ shoe.get_image_url }}" alt="{{ shoe.title }}" class="img-fluid rounded-3 w-100 shadow-sm" style="max-height: 480px; object-fit: contain;">
+                
+                <div class="d-flex justify-content-center gap-2 mt-3 text-muted small">
+                    <span class="badge bg-dark border border-secondary text-white"><i class="bi bi-shield-check text-success me-1"></i> 100% Authentic NFC Certified</span>
+                    <span class="badge bg-dark border border-secondary text-white"><i class="bi bi-box-seam text-warning me-1"></i> Original Presentation Box</span>
+                </div>
+            </div>
+
+            <!-- Biomechanical Specs Box -->
+            <div class="p-4 rounded-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                <h5 class="text-white fw-bold mb-3 display-font d-flex align-items-center gap-2">
+                    <i class="bi bi-cpu-fill text-warning"></i> Lab Specifications
+                </h5>
+                <div class="row g-3 small">
+                    <div class="col-6">
+                        <div class="text-muted">Weight (Men's US 9.5):</div>
+                        <div class="text-white fw-bold">{{ shoe.weight }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted">Propulsion / Cushioning:</div>
+                        <div class="text-white fw-bold">{{ shoe.cushioning }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted">Upper Construction:</div>
+                        <div class="text-white fw-bold">{{ shoe.material }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted">Model Release:</div>
+                        <div class="text-white fw-bold">{{ shoe.release_year }} Series</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Purchase Options & Details -->
+        <div class="col-lg-6">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">{{ shoe.brand.name }} &bull; {{ shoe.category.name }}</span>
+            <h1 class="text-white fw-bold display-font mt-1 mb-2">{{ shoe.title }}</h1>
+            
+            {% if shoe.tagline %}
+                <p class="text-white-50 fs-6 fw-medium mb-3">{{ shoe.tagline }}</p>
+            {% endif %}
+
+            <!-- Ratings & Reviews -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="d-flex align-items-center gap-1 text-warning">
+                    <i class="bi bi-star-fill"></i>
+                    <span class="fw-bold fs-5">{{ shoe.rating }}</span>
+                </div>
+                <span class="text-muted small">&bull;</span>
+                <a href="#reviewsSection" class="text-muted small text-decoration-underline">{{ shoe.review_count }} Verified Athlete Reviews</a>
+                <span class="text-muted small">&bull;</span>
+                <span class="badge bg-success bg-opacity-25 text-success small"><i class="bi bi-check-circle-fill me-1"></i> In Stock</span>
+            </div>
+
+            <!-- Price Display -->
+            <div class="p-3 rounded-3 mb-4 d-flex align-items-baseline gap-3" style="background: rgba(255, 85, 0, 0.08); border: 1px solid rgba(255, 85, 0, 0.2);">
+                <span class="display-font fs-2 fw-bold text-white">${{ shoe.price }}</span>
+                {% if shoe.original_price %}
+                    <span class="text-decoration-line-through text-muted fs-5">${{ shoe.original_price }}</span>
+                    <span class="badge bg-success text-white fw-bold">SAVE {{ shoe.discount_percent }}%</span>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <p class="text-muted small mb-4" style="line-height: 1.7;">
+                {{ shoe.description }}
+            </p>
+
+            <!-- Size Selector Form -->
+            <form id="productPurchaseForm" method="POST" action="{% url 'cart' %}">
+                {% csrf_token %}
+                <input type="hidden" name="shoe_id" value="{{ shoe.id }}">
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="text-white small fw-bold">SELECT MEN'S SIZE (US):</label>
+                        <a href="{% url 'helpline' %}#faq" class="text-warning small text-decoration-none">
+                            <i class="bi bi-rulers me-1"></i> Sizing & Fit Guide
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2" id="shoeSizeChips">
+                        {% for sz in sizes %}
+                            <input type="radio" class="btn-check" name="shoe_size_{{ shoe.id }}" id="size_{{ sz.id }}" value="{{ sz.size }}" {% if forloop.first %}checked{% endif %} autocomplete="off">
+                            <label class="btn btn-outline-secondary text-white py-2 px-3 fw-bold border-secondary border-opacity-50" for="size_{{ sz.id }}">
+                                US {{ sz.size }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- CTA Actions -->
+                <div class="d-flex gap-3 mb-4">
+                    <button type="button" class="btn btn-sole-primary flex-grow-1 py-3 btn-add-to-cart-ajax"
+                            data-shoe-id="{{ shoe.id }}"
+                            data-shoe-title="{{ shoe.title }}">
+                        <i class="bi bi-bag-plus-fill me-2 fs-5"></i> Add to Bag
+                    </button>
+                    <a href="{% url 'checkout' %}" class="btn btn-sole-outline py-3 px-4">
+                        Buy Now <i class="bi bi-lightning-fill text-warning ms-1"></i>
+                    </a>
+                </div>
+            </form>
+
+            <!-- Guarantees & Accordion -->
+            <div class="accordion border-0" id="shoeGuarantees">
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#guaranteeOne">
+                            <i class="bi bi-truck text-warning me-2"></i> Free FedEx Priority Express Delivery (48 Hours)
+                        </button>
+                    </h2>
+                    <div id="guaranteeOne" class="accordion-collapse collapse show" data-bs-parent="#shoeGuarantees">
+                        <div class="accordion-body px-0 text-muted small">
+                            Orders confirmed before 2:00 PM EST ship same-day from our JFK Logistics Hub. Includes real-time tracking code and SMS delivery alerts.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#guaranteeTwo">
+                            <i class="bi bi-arrow-repeat text-warning me-2"></i> 30-Day Risk-Free Wear Test & Hassle-Free Returns
+                        </button>
+                    </h2>
+                    <div id="guaranteeTwo" class="accordion-collapse collapse" data-bs-parent="#shoeGuarantees">
+                        <div class="accordion-body px-0 text-muted small">
+                            Lace them up, run in them, or wear them out. If they don't match your expectations, return them for a 100% full refund with our prepaid return label.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-transparent">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#guaranteeThree">
+                            <i class="bi bi-patch-check-fill text-warning me-2"></i> Holographic Authenticity Seal Guarantee
+                        </button>
+                    </h2>
+                    <div id="guaranteeThree" class="accordion-collapse collapse" data-bs-parent="#shoeGuarantees">
+                        <div class="accordion-body px-0 text-muted small">
+                            Each box features an encrypted NFC microchip. Tap your smartphone to verify footwear serial authenticity and manufacturing lineage.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Reviews & Submission Section -->
+    <div class="mt-5 pt-5 border-top border-secondary border-opacity-25" id="reviewsSection">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <span class="text-warning text-uppercase small fw-bold tracking-wider">COMMUNITY FEEDBACK</span>
+                <h3 class="text-white fw-bold mt-1 display-font">Verified Runner Reviews</h3>
+                <div class="d-flex align-items-center gap-3 my-3">
+                    <div class="fs-1 fw-bold text-white display-font">{{ shoe.rating }}</div>
+                    <div>
+                        <div class="text-warning">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <div class="text-muted small">Based on {{ shoe.review_count }} verified athletes</div>
+                    </div>
+                </div>
+
+                <!-- Add Review Form -->
+                <div class="p-4 rounded-4 mt-4" style="background: #111624; border: 1px solid var(--border-subtle);">
+                    <h5 class="text-white fw-bold mb-3">Leave a Review</h5>
+                    <form method="POST" action="{% url 'add_review' shoe.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Your Name:</label>
+                            <input type="text" name="user_name" class="form-control form-control-sm" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" placeholder="e.g. Liam Foster" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Rating (1 to 5 Stars):</label>
+                            <select name="rating" class="form-select form-select-sm">
+                                <option value="5" selected>5 Stars - Exceptional</option>
+                                <option value="4">4 Stars - Very Good</option>
+                                <option value="3">3 Stars - Average</option>
+                                <option value="2">2 Stars - Below Expectation</option>
+                                <option value="1">1 Star - Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Headline:</label>
+                            <input type="text" name="headline" class="form-control form-control-sm" placeholder="e.g. Best runner in my rotation!" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Your Review / Experience:</label>
+                            <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="Share your experience on fit, comfort, cushioning..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sole-primary btn-sm w-100">
+                            Submit Athlete Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-column gap-3">
+                    {% for rev in reviews %}
+                        <div class="p-4 rounded-4" style="background: #101522; border: 1px solid var(--border-subtle);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        <i class="bi bi-star-fill small"></i>
+                                    {% endfor %}
+                                </div>
+                                <span class="badge bg-success bg-opacity-25 text-success small"><i class="bi bi-patch-check-fill me-1"></i> Verified Purchase</span>
+                            </div>
+                            <h6 class="text-white fw-bold mb-1">{{ rev.headline }}</h6>
+                            <p class="text-muted small mb-2">{{ rev.comment }}</p>
+                            <div class="d-flex justify-content-between align-items-center text-muted small" style="font-size: 0.78rem;">
+                                <span class="text-white fw-semibold">{{ rev.user_name }}</span>
+                                <span>{{ rev.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <p>No reviews yet for this model. Be the first athlete to share your experience!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Shoes Section -->
+    {% if related_shoes %}
+        <div class="mt-5 pt-5 border-top border-secondary border-opacity-25">
+            <h3 class="text-white fw-bold mb-4 display-font">Similar Silhouettes You May Like</h3>
+            <div class="row g-4">
+                {% for rshoe in related_shoes %}
+                    <div class="col-md-3 col-6">
+                        <div class="shoe-card">
+                            <div class="shoe-img-box">
+                                <img src="{{ rshoe.get_image_url }}" alt="{{ rshoe.title }}">
+                            </div>
+                            <div class="shoe-body p-3">
+                                <span class="shoe-brand-title">{{ rshoe.brand.name }}</span>
+                                <h6 class="shoe-title mb-1"><a href="{% url 'shoe_detail' rshoe.slug %}" class="text-white">{{ rshoe.title }}</a></h6>
+                                <div class="shoe-price fs-6 mt-auto">${{ rshoe.price }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

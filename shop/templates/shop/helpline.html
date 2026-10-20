@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}24/7 Footwear Helpline & Customer Concierge | SoleStride{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <h1 class="text-white fw-bold display-font mb-1"><i class="bi bi-headset text-warning me-2"></i> 24/7 Helpline & Support Concierge</h1>
+        <p class="text-muted small mb-0">Direct support for order status, shoe sizing, warranty verification, and hassle-free returns.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="perk-card p-4 text-center">
+                <div class="perk-icon-wrap mx-auto"><i class="bi bi-telephone-inbound-fill"></i></div>
+                <h5 class="text-white fw-bold mb-1">Toll-Free Hotline</h5>
+                <p class="text-muted small mb-2">Speak directly with a footwear specialist.</p>
+                <div class="fs-5 fw-bold text-warning mb-2">+1 (800) 787-4331</div>
+                <span class="badge bg-success bg-opacity-25 text-success small">Mon-Sun &bull; 24 Hours Active</span>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="perk-card p-4 text-center">
+                <div class="perk-icon-wrap mx-auto"><i class="bi bi-envelope-at-fill"></i></div>
+                <h5 class="text-white fw-bold mb-1">Email Concierge</h5>
+                <p class="text-muted small mb-2">Detailed inquiries, warranty claims & corporate drops.</p>
+                <div class="fs-5 fw-bold text-warning mb-2">concierge@solestride.com</div>
+                <span class="badge bg-info bg-opacity-25 text-info small">Avg Response: &lt; 45 Mins</span>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="perk-card p-4 text-center">
+                <div class="perk-icon-wrap mx-auto"><i class="bi bi-chat-dots-fill"></i></div>
+                <h5 class="text-white fw-bold mb-1">Instant Live Chat</h5>
+                <p class="text-muted small mb-2">Our AI & Live Agents are always available.</p>
+                <button type="button" class="btn btn-sole-primary btn-sm px-4 mt-2" onclick="document.getElementById('chatWidgetBtn').click();">
+                    Launch Live Chat <i class="bi bi-lightning-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Ticket Submission Form -->
+        <div class="col-lg-6">
+            <div class="p-4 rounded-4 shadow-sm" style="background: #111624; border: 1px solid var(--border-subtle);">
+                <span class="text-warning text-uppercase small fw-bold tracking-wider">OFFICIAL INQUIRY</span>
+                <h3 class="text-white fw-bold mt-1 mb-3 display-font">Submit a Support Ticket</h3>
+                <p class="text-muted small mb-4">Need personalized assistance with a shipment or fitting? Send us a ticket and our master footwear team will respond promptly.</p>
+
+                <form method="POST" action="{% url 'helpline' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Full Name *</label>
+                            <input type="text" name="name" class="form-control form-control-sm" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" placeholder="e.g. Alex Mercer" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Email Address *</label>
+                            <input type="email" name="email" class="form-control form-control-sm" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" placeholder="alex@example.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Order Number (Optional)</label>
+                            <input type="text" name="order_number" class="form-control form-control-sm" placeholder="e.g. SO-98241">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Issue Category *</label>
+                            <select name="issue_type" class="form-select form-select-sm">
+                                <option value="TRACKING" selected>Shipment & Live Tracking</option>
+                                <option value="SIZING">Shoe Sizing & Fit Consultation</option>
+                                <option value="ORDER">Order Modification / Cancellation</option>
+                                <option value="RETURN">Refunds & 30-Day Returns</option>
+                                <option value="QUALITY">Authenticity & Materials</option>
+                                <option value="OTHER">General Inquiries</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Subject *</label>
+                            <input type="text" name="subject" class="form-control form-control-sm" placeholder="Brief summary of your inquiry" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Detailed Message *</label>
+                            <textarea name="message" class="form-control form-control-sm" rows="4" placeholder="Describe your question or issue in detail..." required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-sole-primary w-100 py-2">
+                                <i class="bi bi-send-fill me-1"></i> Send Support Ticket
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="col-lg-6" id="faq">
+            <span class="text-warning text-uppercase small fw-bold tracking-wider">FREQUENTLY ASKED QUESTIONS</span>
+            <h3 class="text-white fw-bold mt-1 mb-4 display-font">Instant Answers</h3>
+
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25 mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <i class="bi bi-question-circle-fill text-warning me-2"></i> How do I track my active footwear shipment?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body px-0 text-muted small">
+                            You can track any order by heading to our <a href="{% url 'track_order' %}" class="text-warning text-decoration-underline">Track Order page</a> and entering your tracking code (e.g., <strong>STRIDE-8842-NY</strong>). You will see real-time updates, courier driver assignment, and live delivery countdowns.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25 mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <i class="bi bi-question-circle-fill text-warning me-2"></i> How does the 30-Day Risk-Free Trial work?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body px-0 text-muted small">
+                            We encourage you to wear your shoes for 30 full days. Run, train, or walk in them. If they aren't the most comfortable shoes you own, return them with our complimentary prepaid shipping label for a 100% full refund.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25 mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <i class="bi bi-question-circle-fill text-warning me-2"></i> How is 100% authenticity guaranteed?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body px-0 text-muted small">
+                            Every pair undergoes a 14-point structural and forensic authentication check by certified footwear specialists. An encrypted NFC hologram tag is embedded in each shoebox, readable with any modern iOS or Android smartphone.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent border-bottom border-secondary border-opacity-25 mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            <i class="bi bi-question-circle-fill text-warning me-2"></i> Which size should I order?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body px-0 text-muted small">
+                            Our performance running silhouettes fit True To Size (TTS) with an ergonomic lockdown toe-box. For wide foot profiles, we suggest ordering a half size up (e.g. US 10.5 instead of US 10).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-transparent mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-transparent text-white px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            <i class="bi bi-question-circle-fill text-warning me-2"></i> How fast is standard delivery dispatch?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body px-0 text-muted small">
+                            All domestic orders over $150 qualify for free FedEx Priority Air Express with a guaranteed 48-hour delivery window. International shipments arrive in 3 to 5 business days.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Track Order & Live Delivery Status | SoleStride Footwear{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom border-secondary border-opacity-25" style="background: #0b0e17;">
+    <div class="container">
+        <h1 class="text-white fw-bold display-font mb-1"><i class="bi bi-geo-alt-fill text-warning me-2"></i> Real-Time Shipment & Delivery Tracker</h1>
+        <p class="text-muted small mb-0">Monitor your premium footwear dispatch, flight milestones, and live courier van coordinates.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Search Bar & Demo Quick Fills -->
+    <div class="p-4 rounded-4 mb-5 shadow-sm" style="background: #111624; border: 1px solid var(--border-subtle);">
+        <form method="GET" action="{% url 'track_order' %}" class="row g-3 align-items-center">
+            <div class="col-lg-8">
+                <label class="form-label text-muted small fw-bold">ENTER TRACKING CODE OR ORDER NUMBER:</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary border-opacity-50 text-warning"><i class="bi bi-upc-scan"></i></span>
+                    <input type="text" name="code" id="trackingCodeInput" value="{{ query|default:'' }}" class="form-control text-uppercase" placeholder="e.g. STRIDE-8842-NY or SO-98241" required>
+                    <button type="submit" class="btn btn-sole-primary px-4">
+                        <i class="bi bi-search me-1"></i> Track Shipment
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <span class="text-muted small fw-bold d-block mb-1">DEMO TRACKING CODES:</span>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-warning btn-fill-tracking" data-code="STRIDE-8842-NY">
+                        <i class="bi bi-truck"></i> STRIDE-8842-NY (Out for Delivery)
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info btn-fill-tracking" data-code="STRIDE-3190-CA">
+                        <i class="bi bi-airplane"></i> STRIDE-3190-CA (In Transit)
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {% if recent_user_orders %}
+            <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted small fw-bold">Your Active Orders:</span>
+                {% for ro in recent_user_orders %}
+                    <a href="{% url 'track_order' %}?code={{ ro.tracking_code }}" class="btn btn-sm btn-dark border border-secondary text-white py-1">
+                        #{{ ro.order_number }} ({{ ro.tracking_code }}) - <span class="text-warning">{{ ro.get_status_display }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if order %}
+        <div class="tracking-card mb-5">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-4 border-bottom border-secondary border-opacity-25">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="text-muted small text-uppercase fw-bold">Order #{{ order.order_number }}</span>
+                        <span class="badge {% if order.status == 'DELIVERED' %}bg-success{% elif order.status == 'OUT_FOR_DELIVERY' %}bg-warning text-dark{% else %}bg-primary{% endif %} px-3 py-1 fw-bold">
+                            {{ order.get_status_display|upper }}
+                        </span>
+                    </div>
+                    <h2 class="text-white fw-bold display-font mb-0">Tracking: {{ order.tracking_code }}</h2>
+                </div>
+                <div class="text-md-end">
+                    <span class="text-muted small d-block">Estimated Arrival:</span>
+                    <div class="text-warning fw-bold fs-4">{{ order.estimated_delivery }}</div>
+                </div>
+            </div>
+
+            <div class="delivery-progress-container">
+                <div class="delivery-progress-fill" style="width: {{ order.progress_percentage }}%;"></div>
+            </div>
+
+            <div class="row text-center small text-muted g-2 mb-5">
+                <div class="col-2 {% if order.progress_percentage >= 15 %}text-warning fw-bold{% endif %}">
+                    <i class="bi bi-cart-check fs-5 d-block mb-1"></i> Placed
+                </div>
+                <div class="col-2 {% if order.progress_percentage >= 35 %}text-warning fw-bold{% endif %}">
+                    <i class="bi bi-patch-check fs-5 d-block mb-1"></i> Quality Check
+                </div>
+                <div class="col-2 {% if order.progress_percentage >= 55 %}text-warning fw-bold{% endif %}">
+                    <i class="bi bi-box-seam fs-5 d-block mb-1"></i> Dispatched
+                </div>
+                <div class="col-2 {% if order.progress_percentage >= 75 %}text-warning fw-bold{% endif %}">
+                    <i class="bi bi-airplane-engines fs-5 d-block mb-1"></i> In Transit
+                </div>
+                <div class="col-2 {% if order.progress_percentage >= 90 %}text-warning fw-bold{% endif %}">
+                    <i class="bi bi-truck fs-5 d-block mb-1"></i> Out for Delivery
+                </div>
+                <div class="col-2 {% if order.progress_percentage >= 100 %}text-success fw-bold{% endif %}">
+                    <i class="bi bi-house-check fs-5 d-block mb-1"></i> Delivered
+                </div>
+            </div>
+
+            <div class="row g-5">
+                <div class="col-lg-7">
+                    <h5 class="text-white fw-bold mb-4 display-font d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-warning"></i> Shipment Milestone History
+                    </h5>
+
+                    <div class="timeline-track">
+                        {% for update in order.timeline.all %}
+                            <div class="timeline-step {% if update.is_completed %}completed{% else %}active{% endif %}">
+                                <div class="timeline-step-icon">
+                                    <i class="bi {% if update.is_completed %}bi-check-lg{% else %}bi-arrow-repeat{% endif %}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-white fw-bold mb-0">{{ update.status_title }}</h6>
+                                    <div class="text-muted small mb-1">{{ update.location }} &bull; <span class="text-warning">{{ update.timestamp|date:"M d, Y &bull; H:i" }}</span></div>
+                                    {% if update.description %}
+                                        <p class="text-muted small mb-0">{{ update.description }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="timeline-step completed">
+                                <div class="timeline-step-icon"><i class="bi bi-check-lg"></i></div>
+                                <div>
+                                    <h6 class="text-white fw-bold mb-0">Order Confirmed & Payment Received</h6>
+                                    <div class="text-muted small">SoleStride Fulfillment Hub</div>
+                                    <p class="text-muted small">Robotic verification complete. Protective shoe tree inserted.</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="p-4 rounded-4 mb-4" style="background: #090c13; border: 1px solid var(--border-subtle);">
+                        <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">
+                            <i class="bi bi-person-badge-fill text-warning me-1"></i> Courier & Driver Details
+                        </h6>
+
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle p-3 text-white fs-4" style="background: rgba(255, 85, 0, 0.15);">
+                                <i class="bi bi-truck-front-fill text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold">{{ order.courier_partner }}</div>
+                                <div class="text-muted small">Driver: <strong class="text-white">{{ order.driver_name }}</strong></div>
+                                <div class="text-muted small">Location: {{ order.current_location }}</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.03);">
+                            <div class="small text-muted mb-1">Direct Courier Contact:</div>
+                            <div class="text-white fw-bold small"><i class="bi bi-telephone-fill text-warning me-1"></i> {{ order.driver_phone }}</div>
+                        </div>
+
+                        {% if order.notes %}
+                            <div class="small text-muted">
+                                <strong class="text-white">Handling Instructions:</strong><br>
+                                {{ order.notes }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-4 rounded-4" style="background: #090c13; border: 1px solid var(--border-subtle);">
+                        <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">
+                            <i class="bi bi-box-fill text-warning me-1"></i> Package Contents
+                        </h6>
+
+                        <div class="d-flex flex-column gap-3">
+                            {% for item in order.items.all %}
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ item.shoe.get_image_url }}" alt="{{ item.shoe.title }}" class="rounded-3" style="width: 55px; height: 55px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="text-white small fw-bold">{{ item.shoe.title }}</div>
+                                        <div class="text-muted small">Size: US {{ item.size }} &bull; Qty: {{ item.quantity }}</div>
+                                    </div>
+                                    <div class="text-white small fw-bold">${{ item.subtotal }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="pt-3 mt-3 border-top border-secondary border-opacity-25 small text-muted">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> Destination: <span class="text-white">{{ order.shipping_address }}, {{ order.city }}, {{ order.postal_code }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-fingerprint"></i></div>
+                    <h5 class="text-white fw-bold">Live GPS Telemetry</h5>
+                    <p class="text-muted small">We provide end-to-end milestone tracking from the warehouse inspection bay to your doorstep.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-bell-fill"></i></div>
+                    <h5 class="text-white fw-bold">Instant SMS Notifications</h5>
+                    <p class="text-muted small">Receive automated delivery dispatch alerts and photo hand-off confirmations.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="perk-card text-center p-4">
+                    <div class="perk-icon-wrap mx-auto"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h5 class="text-white fw-bold">Tamper-Proof Seal</h5>
+                    <p class="text-muted small">All premium shoe boxes are dispatched in reinforced climate-controlled packaging.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
